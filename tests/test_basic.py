@@ -1,6 +1,6 @@
 import os
 import pytest
-import project.graphs  # on import will print something from __init__ file
+import project.graphs
 
 
 graph1 = project.graphs.load_graph('skos')
