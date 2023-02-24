@@ -52,3 +52,4 @@ def make_two_cycled_graph(fst_cycle_vertices, snd_cycle_vertices, labels: tuple)
 def make_and_save_two_cycled_graph(fst_cycle_vertices, snd_cycle_vertices, labels: tuple, path):
     graph = make_two_cycled_graph(fst_cycle_vertices, snd_cycle_vertices, labels)
     save_graph(graph, path)
+    return graph

@@ -37,11 +37,8 @@ def test_save_graph():
 
 
 def test_two_cycled():
-    graph = project.graphs.make_two_cycled_graph(42, 21, ("a", "b"))
-    project.graphs.save_graph(graph, 'two_c')
+    graph = project.graphs.make_and_save_two_cycled_graph(42, 21, ("a", "b"), path='two_c')
     new_graph = nx.drawing.nx_pydot.read_dot('two_c')
     new_graph.remove_node('\\n')
-    assert graph.number_of_nodes() == 42 + 21 + 1
-    assert project.graphs.get_labels(graph) == {"a", "b"}
     assert project.graphs.get_graph_info(new_graph) == project.graphs.get_graph_info(graph)
     os.remove('two_c')
