@@ -1,14 +1,9 @@
-from typing import Union
+from typing import Union, Set
 
 import project.graphs
 import networkx as nx
 from pyformlang.regular_expression import Regex
-from pyformlang.finite_automaton import (
-    NondeterministicFiniteAutomaton,
-    DeterministicFiniteAutomaton,
-    EpsilonNFA,
-    State
-)
+from pyformlang.finite_automaton import DeterministicFiniteAutomaton, EpsilonNFA
 
 
 def regex_to_dfa(raw_regex: str) -> DeterministicFiniteAutomaton:
@@ -19,8 +14,8 @@ def regex_to_dfa(raw_regex: str) -> DeterministicFiniteAutomaton:
 
 
 def graph_to_nfa(graph: Union[str, nx.MultiDiGraph],
-                 start_vs: set[int] = None,
-                 final_vs: set[int] = None) -> EpsilonNFA:
+                 start_vs: Set[int] = None,
+                 final_vs: Set[int] = None) -> EpsilonNFA:
 
     if type(graph) == str:
         graph = project.graphs.load_graph(graph_name=graph)
