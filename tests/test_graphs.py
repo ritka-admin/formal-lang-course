@@ -1,5 +1,4 @@
 import os
-import pytest
 import project.graphs
 import networkx as nx
 

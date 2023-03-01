@@ -41,8 +41,3 @@ def graph_to_nfa(graph: Any[str, nx.MultiDiGraph],
             nfa.add_start_state(state)
 
     return nfa
-
-
-
-
-
