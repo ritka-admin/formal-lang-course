@@ -9,14 +9,12 @@ from pyformlang.finite_automaton import DeterministicFiniteAutomaton, EpsilonNFA
 def regex_to_dfa(raw_regex: str) -> DeterministicFiniteAutomaton:
     regex = Regex(raw_regex)
     epsilon_nfa = regex.to_epsilon_nfa()
-    deterministic = epsilon_nfa.to_deterministic()
-    return deterministic.minimize()
+    return epsilon_nfa.minimize()
 
 
 def graph_to_nfa(graph: Union[str, nx.MultiDiGraph],
                  start_vs: Set[int] = None,
                  final_vs: Set[int] = None) -> EpsilonNFA:
-
     if type(graph) == str:
         graph = project.graphs.load_graph(graph_name=graph)
 
