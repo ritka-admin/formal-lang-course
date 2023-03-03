@@ -7,6 +7,16 @@ from pyformlang.finite_automaton import DeterministicFiniteAutomaton, EpsilonNFA
 
 
 def regex_to_dfa(raw_regex: str) -> DeterministicFiniteAutomaton:
+    """
+    Turns regular expression into deterministic finite automaton.
+
+    Parameters:
+         raw_regex: regular expression as a string
+
+    Returns:
+        minimized deterministic finite automaton
+        built upon the provided regular expression
+    """
     regex = Regex(raw_regex)
     epsilon_nfa = regex.to_epsilon_nfa()
     return epsilon_nfa.minimize()
@@ -15,6 +25,18 @@ def regex_to_dfa(raw_regex: str) -> DeterministicFiniteAutomaton:
 def graph_to_nfa(graph: Union[str, nx.MultiDiGraph],
                  start_vs: Set[int] = None,
                  final_vs: Set[int] = None) -> EpsilonNFA:
+    """
+    Builds a nondeterministic finite automaton for the provided graph.
+
+    Parameters:
+        graph: graph name or networkx graph itself
+        start_vs: vertices that will be marked as starting states
+        final_vs: vertices that will be marked as final states
+
+    Returns:
+        Nondeterministic finite automaton. If start_vs or final_vs equals to None,
+        returns a graph with all vertices marked as start / final states.
+    """
     if type(graph) == str:
         graph = project.graphs.load_graph(graph_name=graph)
 
