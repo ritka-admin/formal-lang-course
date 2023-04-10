@@ -11,27 +11,15 @@ def cfg_to_weak_normal_from(grammar: CFG) -> CFG:
     Returns:
         context-free grammar in a weak Chomsky form
     """
-    initial_grammar_rules = grammar.productions
-    initial_grammar_start_symbol = grammar.start_symbol
+    grammar_m = grammar.eliminate_unit_productions().remove_useless_symbols()
+    dec = grammar_m._get_productions_with_only_single_terminals()
+    new_prod = grammar_m._decompose_productions(dec)
 
-    without_epsilons = grammar.remove_epsilon().productions
-    epsilon_rules = set(initial_grammar_rules) - set(without_epsilons)  # set of epsilon rules
-
-    # add rules with terminals on the right side
-    start_terminal_right = set()
-    for production in initial_grammar_rules:
-        if initial_grammar_start_symbol in production.body and len(production.body) == 2:
-            for symb in production.body:
-                if not isinstance(symb, Terminal):
-                    start_terminal_right.add(production)
-
-    rules = start_terminal_right.union(epsilon_rules)
-    normal_form = grammar.to_normal_form()
     return CFG(
-        variables=normal_form.variables,
-        terminals=normal_form.terminals,
-        start_symbol=initial_grammar_start_symbol,
-        productions=rules.union(normal_form.productions)
+        variables=grammar_m.variables,
+        terminals=grammar_m.terminals,
+        start_symbol=grammar_m.start_symbol,
+        productions=new_prod
     )
 
 
