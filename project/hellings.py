@@ -1,6 +1,7 @@
 import networkx as nx
 from typing import Set, Tuple, Dict
 from pyformlang.cfg import CFG, Variable
+from pyformlang.cfg.terminal import Terminal
 from project.cf_grammar import cfg_to_weak_normal_from
 
 
@@ -26,16 +27,17 @@ def hellings(graph: nx.MultiDiGraph, cfg: CFG) -> Set[Tuple]:
     epsilon_edges = set()
     # add epsilon edge to each vertex
     for h in epsilon_production_head:
-        epsilon_edges.add((v, h, v) for v in range(graph.number_of_nodes()))
+        for v in range(graph.number_of_nodes()):
+            epsilon_edges.add((v, h, v))
 
     terminal_edges = set()
     # add graph edges that has the 'p.body[0]' terminal label on it
     for e1, e2, edge_info in graph.edges(data=True):
         for p in terminal_production_head:
-            if p.body[0] == edge_info["label"]:
-                terminal_edges.add((e1, e2, p.head.value))
+            if p.body[0] == Terminal(edge_info["label"]):
+                terminal_edges.add((e1, p.head.value, e2))
 
-    rules = epsilon_edges | terminal_edges
+    rules = epsilon_edges.union(terminal_edges)
 
     rules_copy = rules.copy()
     # add new edges that are created via several rules
@@ -50,23 +52,23 @@ def hellings(graph: nx.MultiDiGraph, cfg: CFG) -> Set[Tuple]:
                     if p.body[0].value == B and p.body[1].value == A \
                             and (x, p.head.value, v) not in rules:
                         new_edges.add((x, p.head.value, v))
-                step.union(new_edges)
+                step |= new_edges
 
-        rules.union(step)
-        rules_copy.union(step)
+        rules |= step
+        rules_copy |= step
         step.clear()
 
         for x, B, y in rules:
             if x == v:
                 new_edges = set()
                 for p in nonterminals_production_head:
-                    if p.body[0].value == A and p.body[1].value \
+                    if p.body[0].value == A and p.body[1].value == B \
                             and (u, p.head.value, y) not in rules:
                         new_edges.add((u, p.head.value, y))
-                step.union(new_edges)
+                step |= new_edges
 
-        rules.union(step)
-        rules_copy.union(step)
+        rules |= step
+        rules_copy |= step
 
     return rules
 
