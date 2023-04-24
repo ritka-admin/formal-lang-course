@@ -73,8 +73,8 @@ def hellings(graph: nx.MultiDiGraph, cfg: CFG) -> Set[Tuple]:
     return rules
 
 
-def graph_query(graph: nx.MultiDiGraph, cfg: CFG, start_vertices,
-                final_vertices, start_nonterminal: Variable) -> Dict[int, int]:
+def graph_query_hellings(graph: nx.MultiDiGraph, cfg: CFG, start_vertices,
+                         final_vertices, start_nonterminal: Variable) -> Dict[int, int]:
     """
     Queries the graph using hellings algorithm
 
