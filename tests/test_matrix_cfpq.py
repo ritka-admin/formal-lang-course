@@ -1,6 +1,6 @@
 import pytest
 
-from cfpq.hellings import *
+from cfpq.matrix import *
 from project.graphs import make_two_cycled_graph
 from cfpq_data import labeled_cycle_graph
 
@@ -55,14 +55,14 @@ prod3 = """
         ),
     ],
 )
-def test_hellings(cfg, graph, expected):
-    res = hellings(graph, CFG.from_text(cfg))
+def test_matrix(cfg, graph, expected):
+    res = matrix(graph, CFG.from_text(cfg))
     assert res == expected
 
 
-def test_query_to_cfg():
+def test_query_to_cfg_matrix():
     cfg = prod3
     graph = make_two_cycled_graph(2, 2, ("a", "b"))
     expected = {0: {4},
                 2: {2, 4}}
-    assert graph_query_hellings(graph, CFG.from_text(cfg), [0, 2], [2, 4], Variable("S")) == expected
+    assert graph_query_matrix(graph, CFG.from_text(cfg), [0, 2], [2, 4], Variable("S")) == expected
