@@ -78,7 +78,7 @@ lambda = \ list<var> -> expr
   
   ```
   var allPairs = get_reachable(graph);
-  var allPairs0 = \g -> get_reachable(g);
+  var allPairs0 = \[g] -> get_reachable(g);
   ```
   
 - Получить стартовые вершины, аналогичные тем, что есть в другом графе
