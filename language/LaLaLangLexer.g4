@@ -1,9 +1,5 @@
 lexer grammar LaLaLangLexer;
 
-@header {
-    package com.github.ritka_admin.formal-lang-course.language;
-}
-
 TRUE: 'True';
 FALSE: 'False';
 
@@ -14,6 +10,10 @@ SEMICOLON: ';';
 COMMA: ',';
 LAMBDA: '\\';
 ARROW: '->';
+INTERSECT: '&';
+UNION: '|';
+PLUS: '+';
+KLEENE: '*';
 
 OPEN_PARENS: '(';
 CLOSE_PARENS: ')';
@@ -21,6 +21,11 @@ OPEN_BRACE: '{';
 CLOSE_BRACE: '}';
 OPEN_SQUARE: '[';
 CLOSE_SQUARE: ']';
+
+FUNCNAME: ('set_start' | 'set_final' | 'add_start' |
+'add_final' | 'get_start' | 'get_final' | 'get_reachable' |
+'get_vertices' | 'get_edges' | 'get_labels' | 'map' | 'filter'
+| 'load');
 
 fragment DIGIT: [0-9];
 NUMBER: [1-9] DIGIT* | DIGIT;
