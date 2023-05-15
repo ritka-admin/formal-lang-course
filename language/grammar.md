@@ -1,4 +1,15 @@
-## Абстрактный синтаксис
+## Генерация парсера
+Архив с нужной версией (последняя версия у pip --- 4.12):
+`curl -O https://www.antlr.org/download/antlr-4.12.0-complete.jar`
+
+Генерация:
+```
+cd language
+java -jar ~/Downloads/antlr-4.12.0-complete.jar *.g4 -o antlr_gen -Dlanguage=Python3 -visitor
+```
+
+## Описание языка
+### Абстрактный синтаксис
 
 ```
 prog = List<stmt>
@@ -39,7 +50,7 @@ expr =
 lambda = \ list<var> -> expr
 ```
 
-## Примеры
+### Примеры
 
 - Объявление перемнной
 

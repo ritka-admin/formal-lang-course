@@ -1,35 +1,35 @@
 parser grammar LaLaLangParser;
 
-@header {
-    package com.github.ritka_admin.formal-lang-course.language;;
-}
-
 options {
   tokenVocab=LaLaLangLexer;
 }
 
 program
-    : stmt* EOF
+    : (stmts+=stmt)* EOF
     ;
 
 stmt
-    : initializerStmt SEMICOLON
-    | assignmentStmt SEMICOLON
-    | printStmt SEMICOLON
+    : initializerStmt SEMICOLON #iniStmt
+    | assignmentStmt SEMICOLON  #assStmt
+    | printStmt SEMICOLON       #priStmt
     ;
 
 expr
     : atom
     | funcExpr
-    | lambda
+    | lambdaFunc
+    | expr INTERSECT expr  // пересечение
+    | expr UNION expr      // объединение
+    | expr PLUS expr       // конкатенация
+    | expr KLEENE          // звезда Клини
     ;
 
 funcExpr
-    : identifier OPEN_PARENS ((arg)? | arg (COMMA arg)+) CLOSE_PARENS
+    : FUNCNAME OPEN_PARENS ((arg)? | arg (COMMA arg)+) CLOSE_PARENS
     ;
 
-lambda
-    : LAMBDA list ARROW expr
+lambdaFunc
+    : LAMBDA listVars ARROW expr
     ;
 
 initializerStmt
@@ -52,6 +52,7 @@ atom
 
 arg
     : OPEN_BRACE expr CLOSE_BRACE
+    | collection
     | identifier
     ;
 
@@ -60,15 +61,15 @@ primitives
     ;
 
 collection
-    : list
-    | set
+    : listVars
+    | setVars
     ;
 
-list
+listVars
     : OPEN_SQUARE ((atom)? | atom (COMMA atom)+) CLOSE_SQUARE
     ;
 
-set
+setVars
     : OPEN_BRACE ((primitives)? | primitives (COMMA primitives)+) CLOSE_BRACE
     ;
 
