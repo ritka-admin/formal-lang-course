@@ -32,7 +32,7 @@ jobs:
 
       - name: generate parser
 
-        run:
+        run: |
           antlr4 -Dlanguage=Python3 ./language/*.g4 -o ./language/antlr_gen -visitor
 
       - name: Run pytest
