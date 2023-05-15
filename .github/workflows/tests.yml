@@ -36,5 +36,6 @@ jobs:
           antlr4 -Dlanguage=Python3 *.g4 -o antlr_gen -visitor
 
       - name: Run pytest
+        working-directory: ./tests
         run: |
           pytest
