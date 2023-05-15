@@ -1,0 +1,10 @@
+digraph "LaLaLang graph" {
+"prog 1";
+1 [label=iniStmt];
+x [label=id1];
+x [label=id1];
+1 -> x  [label=varName];
+1 [label=expr];
+1 -> 1;
+"prog 1" -> 1  [label="stmt 0"];
+}
