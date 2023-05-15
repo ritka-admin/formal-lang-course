@@ -31,8 +31,9 @@ jobs:
           python -m pip list
 
       - name: generate parser
+        working-directory: ./language
         run: |
-          antlr4 -Dlanguage=Python3 ./language/*.g4 -o ./language/antlr_gen -visitor
+          antlr4 -Dlanguage=Python3 *.g4 -o antlr_gen -visitor
 
       - name: Run pytest
         run: |
