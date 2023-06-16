@@ -57,7 +57,9 @@ arg
     ;
 
 primitives
-    : (NUMBER | STRING | TRUE | FALSE)
+    : number
+    | string
+    | bool
     ;
 
 collection
@@ -73,7 +75,23 @@ setVars
     : OPEN_BRACE ((primitives)? | primitives (COMMA primitives)+) CLOSE_BRACE
     ;
 
+number
+    : value=NUMBER
+    ;
+
+string
+    : value=STRING
+    ;
+
+bool
+    : true
+    | false
+    ;
+
+true: TRUE;
+false: FALSE;
+
 identifier
-    : NAME
+    : value=NAME
     ;
 

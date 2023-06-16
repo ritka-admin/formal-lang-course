@@ -31,7 +31,7 @@ fragment DIGIT: [0-9];
 NUMBER: [1-9] DIGIT* | DIGIT;
 
 fragment LETTER: [a-zA-Z];
-fragment INPUT_CHARACTER: ~[\r\n\u0085\u2028\u2029];
+fragment INPUT_CHARACTER: ~[\r\n\u0085\u2028\u2029\u0022];
 NAME: ('_' | LETTER)+;
 STRING: '"' INPUT_CHARACTER* '"';
 

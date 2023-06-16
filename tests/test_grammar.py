@@ -1,6 +1,6 @@
 import os
 import pytest
-from project.visitor import check_syntax, write_to_dot_file
+from project.dot_visitor import check_syntax, write_to_dot_file
 
 
 @pytest.mark.parametrize('string', ['var x = 5;',
