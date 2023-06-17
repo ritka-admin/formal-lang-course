@@ -52,13 +52,17 @@ def test_load_func(stmt, expected):
 
 
 @pytest.mark.parametrize('stmt, expected',
-                         [('var y = load("graphs_dot/two_c"); var x = set_start({0}, y);', two_c_automaton)])
-def test_set_final_func(stmt, expected):
-    two_c_automaton.remove_final_state(State(0))
+                         [('var y = load("graphs_dot/two_c"); var x = set_start({0}, y);'
+                           "var k = set_final({1}, x);", two_c_automaton)])
+def test_add_start_final_func(stmt, expected):
+    two_c_automaton.remove_start_state(State(0))
+    two_c_automaton.remove_final_state(State(1))
     tree = create_tree(stmt)
     interpreter = Interpreter(tree)
     interpreter.interpret()
-    assert interpreter._local_vars['x'].is_equivalent_to(expected)
+    two_c_automaton.add_start_state(State(0))
+    two_c_automaton.remove_final_state(State(1))
+    assert interpreter._local_vars['k'].is_equivalent_to(expected)
 
 
 @pytest.mark.parametrize('stmt', ['var x = {1, 2, 3}; print(x);'

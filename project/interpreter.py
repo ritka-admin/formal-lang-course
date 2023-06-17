@@ -3,13 +3,13 @@ from project.types import *
 from project.graphs import *
 from project.finite_state_automaton import *
 
-from pyformlang.finite_automaton import DeterministicFiniteAutomaton, State
+from pyformlang.finite_automaton import State
 from language.antlr_gen.LaLaLangParserVisitor import LaLaLangParserVisitor
 from language.antlr_gen.LaLaLangParser import LaLaLangParser
-from language.antlr_gen.LaLaLangLexer import LaLaLangLexer
 
 LOAD = 'load'
-SET_START = 'set_start'
+ADD_START = 'set_start'
+ADD_FINAL = 'set_final'
 
 
 class Interpreter(LaLaLangParserVisitor):
@@ -60,7 +60,7 @@ class Interpreter(LaLaLangParserVisitor):
                 return automaton
             raise TypeError('Illegal argument type for the path')
 
-        elif func_name == SET_START:
+        elif func_name == ADD_START:
             # TODO: check for the second argument?
             if len(real_args) == 2 and isinstance(real_args[0], LaLaSet):
                 automaton = args[1].accept(self)
@@ -70,6 +70,18 @@ class Interpreter(LaLaLangParserVisitor):
                     automaton.add_start_state(State(v))
                 return automaton
             raise ValueError("Incorrect number or type of the arguments")
+
+        elif func_name == ADD_FINAL:
+            # TODO: check for the second argument?
+            if len(real_args) == 2 and isinstance(real_args[0], LaLaSet):
+                automaton = args[1].accept(self)
+                if not isinstance(automaton, EpsilonNFA):
+                    raise TypeError("Second argument of 'set_start' should be graph")
+                for v in real_args[0].value:
+                    automaton.add_final_state(State(v))
+                return automaton
+
+        raise NotImplementedError(f"No function with name {func_name}")
 
     def visitLambdaFunc(self, ctx: LaLaLangParser.LambdaFuncContext):
         # TODO
