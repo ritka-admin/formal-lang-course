@@ -2,7 +2,7 @@
 name: Run pytest
 
 on:
-  [ push, pull_request ]
+  [ push ]
 
 jobs:
 

@@ -1,9 +1,9 @@
 from project.finite_state_automaton import *
-from project.graphs import load_graph, make_two_cycled_graph
+from project.graphs import load_graph, make_two_cycled_graph, SourceType
 
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 
-graph = load_graph('skos')
+graph = load_graph('skos', SourceType.DOWNLOAD)
 
 
 def test_regex_to_dfa():
