@@ -3,9 +3,18 @@ import cfpq_data as cd
 from collections import namedtuple
 
 
-def load_graph(graph_name: str):
-    downloaded_g = cd.download(graph_name)
-    graph = cd.graph_from_csv(downloaded_g)
+class SourceType:
+    DOWNLOAD = 'download'
+    FILE = 'file'
+
+
+def load_graph(graph_name: str, source_type: SourceType):
+    if source_type == SourceType.DOWNLOAD:
+        downloaded_g = cd.download(graph_name)
+        graph = cd.graph_from_csv(downloaded_g)
+    else:
+        graph = nx.nx_pydot.read_dot(graph_name)
+        graph.remove_node('\\n')
     return graph
 
 

@@ -62,13 +62,13 @@ lambda = \ list<var> -> expr
   
 - Передача невычисленного выражения как аргумента функции
 
-  `set_final({get_vertices(graph)}, graph)`
+  `set_final(get_vertices(graph), graph)`
   
 - Загрузить граф из файла и сделать все его вершины стартовыми:
 
   ```
   var graph = load("/path/to/the/file");
-  var res = set_start({get_vertices(graph)}, graph);
+  var res = set_start(get_vertices(graph), graph);
   ```
 
 - Сделать выборочные вершины стартовыми / финальными
@@ -97,7 +97,7 @@ lambda = \ list<var> -> expr
   ```
   vert = get_vertices(graph);
   var lambdaFunc = \[a] -> a elem vert;
-  similarVert = filter(lambdaFunc, {get_vertices(graph0)};
+  similarVert = filter(lambdaFunc, get_vertices(graph0));
   print(similarVert);
   ```
   

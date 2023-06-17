@@ -51,7 +51,8 @@ atom
     ;
 
 arg
-    : OPEN_BRACE expr CLOSE_BRACE
+    : expr
+    | primitives
     | collection
     | identifier
     ;

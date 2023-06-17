@@ -1,9 +1,18 @@
 import pytest
 from antlr4 import *
+from project.graphs import *
+from project.finite_state_automaton import *
 from project.interpreter import Interpreter
+from pyformlang.finite_automaton import EpsilonNFA, State
 
 from language.antlr_gen.LaLaLangParser import LaLaLangParser
 from language.antlr_gen.LaLaLangLexer import LaLaLangLexer
+
+two_c_graph: nx.MultiDiGraph = load_graph('graphs_dot/two_c', SourceType.FILE)
+two_c_automaton: EpsilonNFA = graph_to_nfa(two_c_graph, two_c_graph.nodes, two_c_graph.nodes)
+
+lol_graph: nx.MultiDiGraph = load_graph('graphs_dot/lol', SourceType.FILE)
+lol_automaton: EpsilonNFA = graph_to_nfa(lol_graph, lol_graph.nodes, lol_graph.nodes)
 
 
 def create_tree(stmt):
@@ -29,6 +38,43 @@ def test_ini_assign_var(stmt):
     interpreter = Interpreter(tree)
     interpreter.interpret()
     # local_vars = interpreter.local_vars
-    # assert output = local_vars["x"]
+    # TODO: assert output = local_vars["x"]
 
 
+@pytest.mark.parametrize('stmt, expected',
+                         [('var y = load("graphs_dot/two_c");', two_c_automaton),
+                          ('var y = load("graphs_dot/lol");', lol_automaton)])
+def test_load_func(stmt, expected):
+    tree = create_tree(stmt)
+    interpreter = Interpreter(tree)
+    interpreter.interpret()
+    assert interpreter._local_vars['y'].is_equivalent_to(expected)
+
+
+@pytest.mark.parametrize('stmt, expected',
+                         [('var y = load("graphs_dot/two_c"); var x = set_start({0}, y);', two_c_automaton)])
+def test_set_final_func(stmt, expected):
+    two_c_automaton.remove_final_state(State(0))
+    tree = create_tree(stmt)
+    interpreter = Interpreter(tree)
+    interpreter.interpret()
+    assert interpreter._local_vars['x'].is_equivalent_to(expected)
+
+
+@pytest.mark.parametrize('stmt', ['var x = {1, 2, 3}; print(x);'
+                                  'var y = [1, "n", true]; print(y);'])
+def test_collections(stmt):
+    tree = create_tree(stmt)
+    interpreter = Interpreter(tree)
+    interpreter.interpret()
+    # TODO: assert
+
+
+@pytest.mark.parametrize('stmt', ['var x = {1, 2, "n"};'])
+def test_typisation_incorrect(stmt):
+    tree = create_tree(stmt)
+    interpreter = Interpreter(tree)
+    with pytest.raises(TypeError):
+        interpreter.interpret()
+
+# типизация: у сетов один и тот же тип; в функциях типа плюс умножить;

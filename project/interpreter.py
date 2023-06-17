@@ -1,9 +1,15 @@
 from antlr4 import *
 from project.types import *
+from project.graphs import *
+from project.finite_state_automaton import *
 
+from pyformlang.finite_automaton import DeterministicFiniteAutomaton, State
 from language.antlr_gen.LaLaLangParserVisitor import LaLaLangParserVisitor
 from language.antlr_gen.LaLaLangParser import LaLaLangParser
 from language.antlr_gen.LaLaLangLexer import LaLaLangLexer
+
+LOAD = 'load'
+SET_START = 'set_start'
 
 
 class Interpreter(LaLaLangParserVisitor):
@@ -39,19 +45,69 @@ class Interpreter(LaLaLangParserVisitor):
         self._local_vars[var_name] = ctx.assignmentStmt().expr().accept(self)
 
     def visitFuncExpr(self, ctx: LaLaLangParser.FuncExprContext):
-        pass
+        func_name = ctx.FUNCNAME().getText()
+        args = ctx.arg()
+
+        real_args = []
+        for arg in args:
+            res = arg.accept(self)
+            real_args.append(res)
+
+        if func_name == LOAD:
+            if len(real_args) == 1 and isinstance(real_args[0], LaLaString):
+                graph = load_graph(real_args[0].value, SourceType.FILE)
+                automaton = graph_to_nfa(graph, graph.nodes, graph.nodes)
+                return automaton
+            raise TypeError('Illegal argument type for the path')
+
+        elif func_name == SET_START:
+            # TODO: check for the second argument?
+            if len(real_args) == 2 and isinstance(real_args[0], LaLaSet):
+                automaton = args[1].accept(self)
+                if not isinstance(automaton, EpsilonNFA):
+                    raise TypeError("Second argument of 'set_start' should be graph")
+                for v in real_args[0].value:
+                    automaton.add_start_state(State(v))
+                return automaton
+            raise ValueError("Incorrect number or type of the arguments")
 
     def visitLambdaFunc(self, ctx: LaLaLangParser.LambdaFuncContext):
+        # TODO
         pass
 
-    # TODO: identifier only for the access, cannot visit it in iniStmt?
+    def visitSetVars(self, ctx: LaLaLangParser.SetVarsContext):
+        primitives = ctx.primitives()
+
+        real_args = []
+        for primitive in primitives:
+            arg = primitive.accept(self)
+            real_args.append(arg)
+
+        if len(real_args):
+            my_type = type(real_args[0])
+
+            if not all(isinstance(x, my_type) for x in real_args):
+                raise TypeError("Different element types in a a set")
+
+            return LaLaSet({x.value for x in real_args})
+
+        return LaLaSet(set())
+
+    def visitListVars(self, ctx: LaLaLangParser.ListVarsContext):
+        atoms = ctx.atom()
+
+        real_args = []
+        for atom in atoms:
+            arg = atom.accept(self)
+            real_args.append(arg)
+
+        return LaLaList([arg.value for arg in real_args])
+
     def visitIdentifier(self, ctx: LaLaLangParser.IdentifierContext):
         if ctx.NAME().symbol.text in self._local_vars.keys():
             return self._local_vars[ctx.NAME().symbol.text]
 
         raise NameError(f"No variable with name {ctx.NAME()}")
-
-    # def visitCollections
 
     def visitNumber(self, ctx: LaLaLangParser.NumberContext):
         return LaLaInt(int(ctx.NUMBER().symbol.text))

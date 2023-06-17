@@ -14,13 +14,16 @@ class LaLaBool(LaLaType):
 
 
 class LaLaString(LaLaType):
-    def __init__(self, value):
+    def __init__(self, value: str):
         self.value = value
+        self.value = self.value.replace('\"', '')
 
 
 class LaLaSet(LaLaType):
-    pass
+    def __init__(self, value: set):
+        self.value = value
 
 
 class LaLaList(LaLaType):
-    pass
+    def __init__(self, value: list):
+        self.value = value
