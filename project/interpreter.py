@@ -1,4 +1,3 @@
-from antlr4 import *
 from project.types import *
 from project.graphs import *
 from project.reachibility import *
@@ -138,15 +137,32 @@ class Interpreter(LaLaLangParserVisitor):
         raise NotImplementedError(f"No function with name {func_name}")
 
     def visitInterExpr(self, ctx: LaLaLangParser.InterExprContext):
+        # TODO
         pass
 
     def visitUnionExpr(self, ctx: LaLaLangParser.UnionExprContext):
-        pass
+        lhs = ctx.lhs.accept(self)
+        rhs = ctx.rhs.accept(self)
+
+        if isinstance(lhs, LaLaFa) and isinstance(rhs, LaLaFa):
+            res = automatons_union(lhs.value, rhs.value)
+            return LaLaFa(res)
+
+        raise ValueError("Incorrect number or type of the arguments")
 
     def visitPlusExpr(self, ctx: LaLaLangParser.PlusExprContext):
-        pass
+        # TODO: numbers?
+        lhs = ctx.lhs.accept(self)
+        rhs = ctx.rhs.accept(self)
+
+        if isinstance(lhs, LaLaFa) and isinstance(rhs, LaLaFa):
+            res = automaton_concat(lhs.value, rhs.value)
+            return LaLaFa(res)
+
+        raise ValueError("Incorrect number or type of the arguments")
 
     def visitKleeneExpr(self, ctx: LaLaLangParser.KleeneExprContext):
+        # TODO
         pass
 
     def visitLambdaFunc(self, ctx: LaLaLangParser.LambdaFuncContext):
