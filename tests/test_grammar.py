@@ -4,7 +4,7 @@ from project.dot_visitor import check_syntax, write_to_dot_file
 
 
 @pytest.mark.parametrize('string', ['var x = 5;',
-                                    'var y = set_start({get_final(graph)}, graph);',
+                                    'var y = set_start(get_final(graph), graph);',
                                     'var z = [[a, b, c], d, e];',
                                     'var xx = \\[x] -> x;'
                                     'x = {4, 5, 6};'])

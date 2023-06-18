@@ -10,6 +10,14 @@ from language.antlr_gen.LaLaLangParser import LaLaLangParser
 LOAD = 'load'
 ADD_START = 'set_start'
 ADD_FINAL = 'set_final'
+GET_START = 'get_start'
+GET_FINAl = 'get_final'
+GET_REACHABLE = 'get_reachable'  # TODO
+GET_VERTICES = 'get_vertices'
+GET_EDGES = 'get_edges'
+GET_LABELS = 'get_labels'
+MAP = 'map'                      # TODO
+FILTER = 'filter'                # TODO
 
 
 class Interpreter(LaLaLangParserVisitor):
@@ -30,7 +38,6 @@ class Interpreter(LaLaLangParserVisitor):
 
     def visitPriStmt(self, ctx: LaLaLangParser.PriStmtContext):
         child_node = ctx.printStmt().expr().accept(self)
-        # TODO: calculate result before printing out
         print(child_node.value)
 
     def visitInitializerStmt(self, ctx: LaLaLangParser.InitializerStmtContext):
@@ -57,17 +64,17 @@ class Interpreter(LaLaLangParserVisitor):
             if len(real_args) == 1 and isinstance(real_args[0], LaLaString):
                 graph = load_graph(real_args[0].value, SourceType.FILE)
                 automaton = graph_to_nfa(graph, graph.nodes, graph.nodes)
-                return automaton
-            raise TypeError('Illegal argument type for the path')
+                return LaLaFa(automaton)
+            raise ValueError("Incorrect number or type of the arguments")
 
         elif func_name == ADD_START:
             # TODO: check for the second argument?
             if len(real_args) == 2 and isinstance(real_args[0], LaLaSet):
                 automaton = args[1].accept(self)
-                if not isinstance(automaton, EpsilonNFA):
+                if not isinstance(automaton, LaLaFa):
                     raise TypeError("Second argument of 'set_start' should be graph")
                 for v in real_args[0].value:
-                    automaton.add_start_state(State(v))
+                    automaton.value.add_start_state(State(v))
                 return automaton
             raise ValueError("Incorrect number or type of the arguments")
 
@@ -75,13 +82,65 @@ class Interpreter(LaLaLangParserVisitor):
             # TODO: check for the second argument?
             if len(real_args) == 2 and isinstance(real_args[0], LaLaSet):
                 automaton = args[1].accept(self)
-                if not isinstance(automaton, EpsilonNFA):
+                if not isinstance(automaton, LaLaFa):
                     raise TypeError("Second argument of 'set_start' should be graph")
                 for v in real_args[0].value:
-                    automaton.add_final_state(State(v))
+                    automaton.value.add_final_state(State(v))
                 return automaton
+            raise ValueError("Incorrect number or type of the arguments")
+
+        elif func_name == GET_START:
+            if len(real_args) == 1 and isinstance(real_args[0], LaLaFa):
+                automaton = args[0].accept(self)
+                return LaLaSet(automaton.value.start_states)
+            raise ValueError("Incorrect number or type of the arguments")
+
+        elif func_name == GET_FINAl:
+            if len(real_args) == 1 and isinstance(real_args[0], LaLaFa):
+                automaton = args[0].accept(self)
+                return LaLaSet(automaton.value.final_states)
+            raise ValueError("Incorrect number or type of the arguments")
+
+        elif func_name == GET_VERTICES:
+            if len(real_args) == 1 and isinstance(real_args[0], LaLaFa):
+                automaton = args[0].accept(self)
+                vertices = set()
+                for vertex in automaton.value.states:
+                    vertices.add(vertex)
+                return LaLaSet(vertices)
+            raise ValueError("Incorrect number or type of the arguments")
+
+        elif func_name == GET_EDGES:
+            if len(real_args) == 1 and isinstance(real_args[0], LaLaFa):
+                automaton = args[0].accept(self)
+                edges = set()
+                for v_from, label, v_to in automaton.value:
+                    edges.add((v_from, label, v_to))
+                return LaLaSet(edges)
+            raise ValueError("Incorrect number or type of the arguments")
+
+        elif func_name == GET_LABELS:
+            if len(real_args) == 1 and isinstance(real_args[0], LaLaFa):
+                automaton = args[0].accept(self)
+                labels = set()
+                for _, label, _ in automaton.value:
+                    labels.add(label)
+                return LaLaSet(labels)
+            raise ValueError("Incorrect number or type of the arguments")
 
         raise NotImplementedError(f"No function with name {func_name}")
+
+    def visitInterExpr(self, ctx: LaLaLangParser.InterExprContext):
+        pass
+
+    def visitUnionExpr(self, ctx: LaLaLangParser.UnionExprContext):
+        pass
+
+    def visitPlusExpr(self, ctx: LaLaLangParser.PlusExprContext):
+        pass
+
+    def visitKleeneExpr(self, ctx: LaLaLangParser.KleeneExprContext):
+        pass
 
     def visitLambdaFunc(self, ctx: LaLaLangParser.LambdaFuncContext):
         # TODO

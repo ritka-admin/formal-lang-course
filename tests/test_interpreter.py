@@ -41,30 +41,6 @@ def test_ini_assign_var(stmt):
     # TODO: assert output = local_vars["x"]
 
 
-@pytest.mark.parametrize('stmt, expected',
-                         [('var y = load("graphs_dot/two_c");', two_c_automaton),
-                          ('var y = load("graphs_dot/lol");', lol_automaton)])
-def test_load_func(stmt, expected):
-    tree = create_tree(stmt)
-    interpreter = Interpreter(tree)
-    interpreter.interpret()
-    assert interpreter._local_vars['y'].is_equivalent_to(expected)
-
-
-@pytest.mark.parametrize('stmt, expected',
-                         [('var y = load("graphs_dot/two_c"); var x = set_start({0}, y);'
-                           "var k = set_final({1}, x);", two_c_automaton)])
-def test_add_start_final_func(stmt, expected):
-    two_c_automaton.remove_start_state(State(0))
-    two_c_automaton.remove_final_state(State(1))
-    tree = create_tree(stmt)
-    interpreter = Interpreter(tree)
-    interpreter.interpret()
-    two_c_automaton.add_start_state(State(0))
-    two_c_automaton.remove_final_state(State(1))
-    assert interpreter._local_vars['k'].is_equivalent_to(expected)
-
-
 @pytest.mark.parametrize('stmt', ['var x = {1, 2, 3}; print(x);'
                                   'var y = [1, "n", true]; print(y);'])
 def test_collections(stmt):
@@ -72,6 +48,68 @@ def test_collections(stmt):
     interpreter = Interpreter(tree)
     interpreter.interpret()
     # TODO: assert
+
+
+@pytest.mark.parametrize('stmt, expected',
+                         [('var y = load("graphs_dot/two_c");', two_c_automaton),
+                          ('var y = load("graphs_dot/lol");', lol_automaton)])
+def test_load_func(stmt, expected):
+    tree = create_tree(stmt)
+    interpreter = Interpreter(tree)
+    interpreter.interpret()
+    assert interpreter._local_vars['y'].value.is_equivalent_to(expected)
+
+
+@pytest.mark.parametrize('stmt, expected',
+                         [('var y = load("graphs_dot/two_c"); var x = set_start({0}, y);'
+                           "var k = set_final({1}, x);", two_c_automaton)])
+def test_add_start_final_func(stmt, expected):
+    two_c_automaton.remove_start_state(State('0'))
+    two_c_automaton.remove_final_state(State('1'))
+    tree = create_tree(stmt)
+    interpreter = Interpreter(tree)
+    interpreter.interpret()
+    two_c_automaton.add_start_state(State('0'))
+    two_c_automaton.add_final_state(State('1'))
+    assert interpreter._local_vars['k'].value.is_equivalent_to(expected)
+
+
+@pytest.mark.parametrize('stmt, expected',
+                         [(
+                                 'var y = load("graphs_dot/two_c"); '
+                                 'var x = get_start(y); '
+                                 'var o = get_final(y);',
+                                 (two_c_automaton.start_states, two_c_automaton.final_states))])
+def test_get_start_final(stmt, expected):
+    tree = create_tree(stmt)
+    interpreter = Interpreter(tree)
+    interpreter.interpret()
+    assert interpreter._local_vars['x'].value == expected[0]
+    assert interpreter._local_vars['o'].value == expected[1]
+
+
+@pytest.mark.parametrize('stmt, expected',
+                         [(
+                            'var y = load("graphs_dot/two_c"); '
+                            'var x = get_vertices(y);',
+                            set(two_c_graph.nodes)
+                         ),
+                          (
+                            'var y = load("graphs_dot/lol"); '
+                            'var x = get_edges(y);',
+                            set((x, y, z) for (x, y, z) in lol_automaton)
+                         ),
+                          (
+                             'var y = load("graphs_dot/lol"); '
+                             'var x = get_labels(y)',
+                             get_graph_info(lol_graph).labels
+                         )
+                         ])
+def test_get_vert_edges_labels(stmt, expected):
+    tree = create_tree(stmt)
+    interpreter = Interpreter(tree)
+    interpreter.interpret()
+    assert interpreter._local_vars['x'].value == expected
 
 
 @pytest.mark.parametrize('stmt', ['var x = {1, 2, "n"};'])

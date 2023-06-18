@@ -15,13 +15,13 @@ stmt
     ;
 
 expr
-    : atom
-    | funcExpr
-    | lambdaFunc
-    | expr INTERSECT expr  // пересечение
-    | expr UNION expr      // объединение
-    | expr PLUS expr       // конкатенация
-    | expr KLEENE          // звезда Клини
+    : atom                          #atomExpr
+    | funcExpr                      #func
+    | lambdaFunc                    #lambda
+    | lhs=expr INTERSECT rhs=expr   #interExpr      // пересечение
+    | lhs=expr UNION rhs=expr       #unionExpr      // объединение
+    | lhs=expr PLUS rhs=expr        #plusExpr       // конкатенация
+    | expr KLEENE                   #kleeneExpr     // звезда Клини
     ;
 
 funcExpr
