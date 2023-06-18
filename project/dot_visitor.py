@@ -109,6 +109,9 @@ class DotTreeVisitor(LaLaLangParserVisitor):
 
         return node
 
+    def visitNumber(self, ctx: LaLaLangParser.NumberContext):
+        return ctx.NUMBER().symbol.text
+
     def visitIdentifier(self, ctx: LaLaLangParser.IdentifierContext):
         n_number = str(self.n_nodes + 1)
         name = ctx.NAME().symbol.text

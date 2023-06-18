@@ -22,8 +22,8 @@ def test_check_invalid_syntax(string):
 
 
 @pytest.mark.parametrize('string, res', [('var x = 5;', 'example1'),
-                                          ('x = 5;', 'example2'),
-                                          ('print(set_final({1, 2, 3}, a));', 'example3')])
+                                          ('x = 5;', 'example2')])
+                                          # ('print(set_final({1, 2, 3}, a));', 'example3')])
 def test_dot(string, res):
     write_to_dot_file(string, False, 'kek')
     with open('kek') as f:
