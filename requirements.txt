@@ -3,6 +3,9 @@ antlr4-tools
 black
 cfpq-data
 pre-commit
-pydot
-pytest
-scipy
+pydot~=1.4.2
+pytest~=7.2.1
+scipy~=1.9.1
+networkx~=2.6.2
+pyformlang~=1.0.1
+numpy~=1.23.3

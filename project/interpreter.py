@@ -1,6 +1,7 @@
 from antlr4 import *
 from project.types import *
 from project.graphs import *
+from project.reachibility import *
 from project.finite_state_automaton import *
 
 from pyformlang.finite_automaton import State
@@ -12,7 +13,7 @@ ADD_START = 'set_start'
 ADD_FINAL = 'set_final'
 GET_START = 'get_start'
 GET_FINAl = 'get_final'
-GET_REACHABLE = 'get_reachable'  # TODO
+GET_REACHABLE = 'get_reachable'
 GET_VERTICES = 'get_vertices'
 GET_EDGES = 'get_edges'
 GET_LABELS = 'get_labels'
@@ -127,6 +128,12 @@ class Interpreter(LaLaLangParserVisitor):
                     labels.add(label)
                 return LaLaSet(labels)
             raise ValueError("Incorrect number or type of the arguments")
+
+        elif func_name == GET_REACHABLE:
+            if len(real_args) == 1 and isinstance(real_args[0], LaLaFa):
+                automaton = args[0].accept(self)
+                v_reachable = find_reachable_for_each_vertex(automaton)
+                return LaLaSet(v_reachable)
 
         raise NotImplementedError(f"No function with name {func_name}")
 
