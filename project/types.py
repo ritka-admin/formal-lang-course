@@ -1,5 +1,6 @@
 from pyformlang.finite_automaton import EpsilonNFA
 
+
 class LaLaType:
     pass
 
@@ -20,12 +21,16 @@ class LaLaString(LaLaType):
         self.value = self.value.replace('\"', '')
 
 
-class LaLaSet(LaLaType):
+class LaLaCollection(LaLaType):
+    pass
+
+
+class LaLaSet(LaLaCollection):
     def __init__(self, value: set):
         self.value = value
 
 
-class LaLaList(LaLaType):
+class LaLaList(LaLaCollection):
     def __init__(self, value: list):
         self.value = value
 
@@ -33,3 +38,9 @@ class LaLaList(LaLaType):
 class LaLaFa(LaLaType):
     def __init__(self, value: EpsilonNFA):
         self.value = value
+
+
+class LaLaLambda(LaLaType):
+    def __init__(self, args: list, body):
+        self.args = args
+        self.body = body
