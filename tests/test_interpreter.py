@@ -159,4 +159,14 @@ def test_map(stmt):
     assert '0' in interpreter._global_vars['y'][0].value.final_states
     assert '0' in interpreter._global_vars['y'][1].value.final_states
 
+
+@pytest.mark.parametrize('stmt, expected',
+                                 [('var y = filter(\[g] -> True, {1, 2, 3})', {1, 2, 3}),
+                                  ('var y = filter(\[g] -> False, [1, 2, 3]])', [])])
+def test_filter(stmt, expected):
+    tree = create_tree(stmt)
+    interpreter = Interpreter(tree)
+    interpreter.interpret()
+    assert interpreter._global_vars['y'].value == expected
+
 # типизация: у сетов один и тот же тип; в функциях типа плюс умножить;

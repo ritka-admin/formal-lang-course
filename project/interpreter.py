@@ -6,6 +6,7 @@ from project.finite_state_automaton import *
 from pyformlang.finite_automaton import State
 from language.antlr_gen.LaLaLangParserVisitor import LaLaLangParserVisitor
 from language.antlr_gen.LaLaLangParser import LaLaLangParser
+from language.antlr_gen.LaLaLangLexer import LaLaLangLexer
 
 LOAD = 'load'
 ADD_START = 'add_start'
@@ -16,8 +17,8 @@ GET_REACHABLE = 'get_reachable'
 GET_VERTICES = 'get_vertices'
 GET_EDGES = 'get_edges'
 GET_LABELS = 'get_labels'
-MAP = 'map'                      # TODO
-FILTER = 'filter'                # TODO
+MAP = 'map'
+FILTER = 'filter'
 
 funcs = [LOAD, ADD_START, ADD_FINAL, GET_START, GET_FINAl, GET_REACHABLE, GET_VERTICES, GET_EDGES, GET_LABELS]
 
@@ -186,7 +187,20 @@ class Interpreter(LaLaLangParserVisitor):
         elif func_name == FILTER:
             if len(real_args) == 2 and isinstance(real_args[0], LaLaLambda) \
                     and isinstance(real_args[1], LaLaCollection):
-                pass
+                lambda_func = real_args[0]
+                collection = real_args[1]
+
+                if lambda_func.body.value:
+                    return collection
+
+                elif not lambda_func.body.value:
+                    if isinstance(collection, LaLaList):
+                        return LaLaList([])
+                    return LaLaSet(set())
+
+                elif lambda_func.body[0] == 'in':
+                    return collection.value
+            raise ValueError("Incorrect number or type of the arguments")
 
         elif func_name == MAP:
             if len(real_args) == 2 and isinstance(real_args[0], LaLaLambda) \
@@ -206,6 +220,7 @@ class Interpreter(LaLaLangParserVisitor):
                         elem_res = method(self, [LaLaFa(elem)], [arguments[0], None])
                         res.append(elem_res)
                     return res
+            raise ValueError("Incorrect number or type of the arguments")
 
         raise NotImplementedError(f"No function with name {func_name}")
 
