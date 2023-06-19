@@ -137,8 +137,14 @@ class Interpreter(LaLaLangParserVisitor):
         raise NotImplementedError(f"No function with name {func_name}")
 
     def visitInterExpr(self, ctx: LaLaLangParser.InterExprContext):
-        # TODO
-        pass
+        lhs = ctx.lhs.accept(self)
+        rhs = ctx.rhs.accept(self)
+
+        if isinstance(lhs, LaLaFa) and isinstance(rhs, LaLaFa):
+            res = automaton_intersect(lhs.value, rhs.value)
+            return LaLaFa(res)
+
+        raise ValueError("Incorrect number or type of the arguments")
 
     def visitUnionExpr(self, ctx: LaLaLangParser.UnionExprContext):
         lhs = ctx.lhs.accept(self)
@@ -151,7 +157,6 @@ class Interpreter(LaLaLangParserVisitor):
         raise ValueError("Incorrect number or type of the arguments")
 
     def visitPlusExpr(self, ctx: LaLaLangParser.PlusExprContext):
-        # TODO: numbers?
         lhs = ctx.lhs.accept(self)
         rhs = ctx.rhs.accept(self)
 
@@ -162,8 +167,13 @@ class Interpreter(LaLaLangParserVisitor):
         raise ValueError("Incorrect number or type of the arguments")
 
     def visitKleeneExpr(self, ctx: LaLaLangParser.KleeneExprContext):
-        # TODO
-        pass
+        automaton = ctx.expr().accept(self)
+
+        if isinstance(automaton, LaLaFa):
+            res = automaton_kleene(automaton.value)
+            return LaLaFa(res)
+
+        raise ValueError("Incorrect number or type of the arguments")
 
     def visitLambdaFunc(self, ctx: LaLaLangParser.LambdaFuncContext):
         # TODO
