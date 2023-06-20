@@ -1,0 +1,9 @@
+var l = load("tests/graphs_dot/lol");
+var m = load("tests/graphs_dot/two_c");
+var x = [l, m];
+var y = map(\[g] -> add_final({0}, g), x);
+
+print("Finals of 1st graph:");
+print(get_final(l));
+print("Finals of 2st graph:");
+print(get_final(m));

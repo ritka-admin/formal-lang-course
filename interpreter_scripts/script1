@@ -1,0 +1,4 @@
+var x = 5;
+var y = load("tests/graphs_dot/lol");
+var z = get_vertices(y);
+print(z);
