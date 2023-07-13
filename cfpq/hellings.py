@@ -110,3 +110,4 @@ def from_file_hellings(graph: nx.MultiDiGraph, file: str) -> Set[Tuple]:
     """
     with open(file) as file:
         return from_text_hellings(graph, file.read())
+
