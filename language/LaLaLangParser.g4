@@ -15,13 +15,13 @@ stmt
     ;
 
 expr
-    : atom
-    | funcExpr
-    | lambdaFunc
-    | expr INTERSECT expr  // пересечение
-    | expr UNION expr      // объединение
-    | expr PLUS expr       // конкатенация
-    | expr KLEENE          // звезда Клини
+    : atom                          #atomExpr
+    | funcExpr                      #func
+    | lambdaFunc                    #lambda
+    | lhs=expr INTERSECT rhs=expr   #interExpr      // пересечение
+    | lhs=expr UNION rhs=expr       #unionExpr      // объединение
+    | lhs=expr PLUS rhs=expr        #plusExpr       // конкатенация
+    | expr KLEENE                   #kleeneExpr     // звезда Клини
     ;
 
 funcExpr
@@ -51,13 +51,16 @@ atom
     ;
 
 arg
-    : OPEN_BRACE expr CLOSE_BRACE
+    : expr
+    | primitives
     | collection
     | identifier
     ;
 
 primitives
-    : (NUMBER | STRING | TRUE | FALSE)
+    : number
+    | string
+    | bool
     ;
 
 collection
@@ -73,7 +76,23 @@ setVars
     : OPEN_BRACE ((primitives)? | primitives (COMMA primitives)+) CLOSE_BRACE
     ;
 
+number
+    : value=NUMBER
+    ;
+
+string
+    : value=STRING
+    ;
+
+bool
+    : true
+    | false
+    ;
+
+true: TRUE;
+false: FALSE;
+
 identifier
-    : NAME
+    : value=NAME
     ;
 
